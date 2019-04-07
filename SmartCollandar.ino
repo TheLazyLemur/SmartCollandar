@@ -15,6 +15,8 @@ int ledPin = 10;
 int _secondsWithTag = 0;
 int _secondsWithoutTag = 0;
 
+bool firstLoop = true;
+
 uchar status;
 uchar str[MAX_LEN];
 
@@ -31,19 +33,22 @@ void setup()
   rfid.init();
 
   pinMode(relayPin, OUTPUT);
-  pinMode(ledPin, OUTPUT);
+  pinMode(10, OUTPUT);
 
   digitalWrite(relayPin, HIGH);
-
-  delay(2000);
+  digitalWrite(10, LOW);
 
   myservo.attach(9);
-  ServoAnimation(false);
-  digitalWrite(ledPin, LOW);
+  delay(2000);
 }
 
 void loop()
 {
+  if (firstLoop == true) {
+    ServoAnimation(0);
+    firstLoop = false;
+  }
+
   status = rfid.request(PICC_REQIDL, str);
 
   if (status == MI_OK)
@@ -51,8 +56,6 @@ void loop()
 
   if (status == MI_OK)
     CompareTag();
-
-  //delay(1000);
 
   _secondsWithoutTag++;
 
@@ -67,16 +70,15 @@ void CompareTag()
   uchar *id = serNum;
 
   if (id[0] == 0x33 && id[1] == 0x2A && id[2] == 0xA5 && id[3] == 0x75)
-  { 
+  {
     delay(500);
     _secondsWithTag++;
 
-    // Blink LED red
     digitalWrite(ledPin, HIGH);
 
     delay(500);
 
-     digitalWrite(ledPin, LOW);
+    digitalWrite(ledPin, LOW);
 
     _secondsWithoutTag = 0;
 
@@ -97,20 +99,22 @@ void CompareTag()
 void OpenCollandar()
 {
   Serial.println("Opening");
-  ServoAnimation(true);
+  ServoAnimation(1);
+  digitalWrite(ledPin, HIGH);
 
   delay(6000);
 
+  digitalWrite(ledPin, LOW);
   Serial.println("Closing");
-  ServoAnimation(false);
+  ServoAnimation(0);
 
 }
 
 
-void ServoAnimation(bool _open) {
+void ServoAnimation(byte _open) {
   int pos = 0;
 
-  if (_open == true) {
+  if (_open == 1) {
     for (pos = 0; pos <= 180; pos += 2) {
       // in steps of 1 degree
       myservo.write(pos);
@@ -118,11 +122,10 @@ void ServoAnimation(bool _open) {
       delay(15);
     }
   }
-  else {
+  else if (_open == 0) {
     for (pos = 180; pos >= 0; pos -= 2) {
       myservo.write(pos);
       delay(15);
     }
   }
-
 }

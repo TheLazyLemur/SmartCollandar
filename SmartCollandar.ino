@@ -1,10 +1,8 @@
-#include <softspi.h>
 #include <rfid1.h>
 #include <Servo.h>
-#include <softspi.h>
-#include "rfid1.h"
 #include <Wire.h>
 
+// Pins
 #define relayPin 8
 #define ledPin 10
 #define servoPin 12

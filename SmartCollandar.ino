@@ -6,10 +6,11 @@
 #include <Wire.h>
 
 #define relayPin 8
+#define ledPin 10
+#define servoPin 12
 
 Servo myservo;
 RFID1 rfid;
-int ledPin = 10;
 
 // RFID timing variables
 int _secondsWithTag = 0;
@@ -38,7 +39,7 @@ void setup()
   digitalWrite(relayPin, HIGH);
   digitalWrite(10, LOW);
 
-  myservo.attach(9);
+  myservo.attach(servoPin);
   delay(2000);
 }
 
@@ -112,6 +113,7 @@ void OpenCollandar()
 
 
 void ServoAnimation(byte _open) {
+
   int pos = 0;
 
   if (_open == 1) {
